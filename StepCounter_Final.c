@@ -9,30 +9,19 @@
 // Global variables for filename and FITNESS_DATA array
 
 
-void file_input_name(FILE *input){
-    char filename[buffer_size];
+//void file_input_name(FILE *input){
+    //char filename[buffer_size];
     
         
-    char line[buffer_size];
-    // get filename from the user
-    printf("Please enter the name of the data file: ");
-
-    // these lines read in a line from the stdin (where the user types)
-    // and then takes the actual string out of it
-    // this removes any spaces or newlines.
-    fgets(line, buffer_size, stdin);
-    sscanf(line, " %s ", filename);
-
-    
-        
-        if (!input)
-        {
-            printf("Error: File could not be opened\n");
-            
-        }
-}
-void count_function(FILE * input){
+   //char line[buffer_size];
      
+
+    
+        
+          
+//}
+void count_function(FILE * input){
+    rewind(input);
     if (input == NULL) {
         perror("couldn't open file");
         
@@ -52,7 +41,54 @@ void count_function(FILE * input){
     printf("Number of records in file: %d\n", count);
 
 }
+void lowest_steps(FILE *input){
+    rewind(input);
+    char *stepchar;
+    char line[buffer_size];
+    int counter = 0,i=0;
+    float minsteps=10000,current;
+    char *sp;
+    
+    FITNESS_DATA fitness_data[100];
+    
+        while (fgets(line, buffer_size, input)!=NULL)
+            {
+                
+                // split up the line and store it in the right place
+                
+                tokeniseRecord(line, ",", fitness_data[counter].date, fitness_data[counter].time, fitness_data[counter].steps);
+                int steps = atoi(fitness_data[counter].steps);
+            
+       
+                current = steps;
+                if(current<minsteps){
+                    minsteps=current;
+                    i = counter;
+                }
+                counter++;
+            }
+            printf("%s %s\n", fitness_data[i].date, fitness_data[i].time); 
 
+}
+void mean_count(FILE *input){
+    rewind(input);
+    FITNESS_DATA fitness_data[100];
+    char line[buffer_size];
+    int mean = 0;
+    int counter = 0;
+            while (fgets(line, buffer_size, input))
+            {
+                // split up the line and store it in the right place
+               
+                tokeniseRecord(line, ",", fitness_data[counter].date, fitness_data[counter].time, fitness_data[counter].steps);
+                int steps = atoi(fitness_data[counter].steps);
+                mean += steps;
+                counter++;
+            }
+            mean /= counter;
+            printf("Your  %d\n", mean);
+            fclose(input);
+}
 // This is your helper function. Do not change it in any way.
 // Inputs: character array representing a row; the delimiter character
 // Ouputs: date character array; time character array; steps character array
@@ -89,13 +125,10 @@ int main(){
     char choice;
     char line[buffer_size];
     char filename[buffer_size];
-    
-
+    FILE *input = NULL;
     while (1)
-    {
-        FILE *input = fopen(filename, "r");
-       
-        
+    {   
+       //FILE *input = fopen(filename, "r");
 
         printf("A: file input name\n");                       
         printf("B: view number of records\n");                    
@@ -116,21 +149,46 @@ int main(){
         // switch statement to control the menu.
         switch (choice){
             case 'A':
-            case 'a':
-                file_input_name(input);
-                fclose(input);
+            case 'a': 
+                
+                //get filename from the user
+                printf("Please enter the name of the data file: ");
+                //these lines read in a line from the stdin (where the user types)
+                //and then takes the actual string out of it
+                //this removes any spaces or newlines.
+                fgets(line, buffer_size, stdin);
+                sscanf(line, " %s ", filename);
+                FILE *input = fopen(filename, "r"); 
+                
+                if (input == NULL)
+                    {
+                        printf("Error: File could not find or open the file\n");
+                        return 1;
+                    } 
+                    else {
+                        printf("File successfully loaded.\n");
+                    }
                 break;
             case 'B':
             case 'b':
                 count_function(input);
                 break;
+            case 'C':
+            case 'c':
+                lowest_steps(input);
+                break;
+            case 'E':
+            case 'e':
+                mean_count(input);
+                break;
             case 'Q':
             case 'q':
+                exit(0);
                 break;
         }
-        return 0;
+        
     }
-
+    return 0;
 }
 
 
