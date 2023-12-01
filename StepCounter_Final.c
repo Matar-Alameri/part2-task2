@@ -9,85 +9,85 @@
 // Global variables for filename and FITNESS_DATA array
 
 
-//void file_input_name(FILE *input){
-    //char filename[buffer_size];
-    
-        
-   //char line[buffer_size];
+
      
 
     
         
           
-//}
-void count_function(FILE * input){
-    rewind(input);
-    if (input == NULL) {
-        perror("couldn't open file");
-        
-    }
-    int count = 0;
-    char recordcount; 
-    recordcount = fgetc(input); //extracts characters from the file and stores it in character recordcount
-    while (recordcount != EOF ) { // while loop will stop when we reach end of file
-        if (recordcount == '\n'){ // implying that it will count for encountering a new line
-        
-            count = count + 1;
-        }
-            recordcount = fgetc(input); //takes the next character from file until we reach end of file
-    }
 
-    fclose(input);
-    printf("Number of records in file: %d\n", count);
-
-}
-void lowest_steps(FILE *input){
-    rewind(input);
-    char *stepchar;
-    char line[buffer_size];
-    int counter = 0,i=0;
-    float minsteps=10000,current;
-    char *sp;
+void highest_steps(FITNESS_DATA *fitness_data, int elements){
     
-    FITNESS_DATA fitness_data[100];
     
-        while (fgets(line, buffer_size, input)!=NULL)
-            {
-                
-                // split up the line and store it in the right place
-                
-                tokeniseRecord(line, ",", fitness_data[counter].date, fitness_data[counter].time, fitness_data[counter].steps);
-                int steps = atoi(fitness_data[counter].steps);
+    int i=0;
+     float maxsteps=0,current;
+    
+                for (int counter = 0; counter < elements; counter++)
+                {
             
-       
-                current = steps;
-                if(current<minsteps){
-                    minsteps=current;
-                    i = counter;
-                }
-                counter++;
-            }
-            printf("%s %s\n", fitness_data[i].date, fitness_data[i].time); 
+                    int steps = atoi(fitness_data[counter].steps);
+                    current = steps;
+                    if(current>maxsteps){
+                        maxsteps=current;
+                        i = counter;
+                    }
+                 
+             }
+             
+             printf("Largest steps: %s %s\n", fitness_data[i].date, fitness_data[i].time); 
+}
+
+void count_function(){
+    
+    
+    // int count = 0;
+    // char recordcount; 
+    // recordcount = fgetc(input); //extracts characters from the file and stores it in character recordcount
+    // while (recordcount != EOF ) { // while loop will stop when we reach end of file
+    //     if (recordcount == '\n'){ // implying that it will count for encountering a new line
+        
+    //         count = count + 1;
+    //     }
+    //         recordcount = fgetc(input); //takes the next character from file until we reach end of file
+    // }
+
+    // fclose(input);
+    // printf("Total records: %d\n", count);
 
 }
-void mean_count(FILE *input){
-    rewind(input);
-    FITNESS_DATA fitness_data[100];
-    char line[buffer_size];
-    int mean = 0;
-    int counter = 0;
-            while (fgets(line, buffer_size, input))
-            {
-                // split up the line and store it in the right place
-               
-                tokeniseRecord(line, ",", fitness_data[counter].date, fitness_data[counter].time, fitness_data[counter].steps);
+
+void lowest_steps(FITNESS_DATA *fitness_data, int elements){
+    
+    
+    int i=0;
+    float minsteps=10000,current;
+    
+
+    
+
+    for (int counter = 0; counter < elements; counter++){
+        int steps = atoi(fitness_data[counter].steps);
+        current = steps;
+        if(current<minsteps){
+            minsteps=current;
+            i = counter;
+        }
+    }
+    
+    printf("Fewest steps: %s %s\n", fitness_data[i].date, fitness_data[i].time); 
+
+}
+
+void mean_count(FITNESS_DATA *fitness_data, int elements){
+    float mean = 0;
+    int counter;
+            for ( counter = 0; counter < elements; counter++)
+            {  
                 int steps = atoi(fitness_data[counter].steps);
                 mean += steps;
-                counter++;
             }
             mean /= counter;
-            printf("Your  %d\n", mean);
-            fclose(input);
+            printf("Your  %.0f\n", mean);            
 }
 // This is your helper function. Do not change it in any way.
 // Inputs: character array representing a row; the delimiter character
@@ -115,28 +115,31 @@ void tokeniseRecord(const char *input, const char *delimiter,
     // Free the duplicated string
     free(inputCopy);
 
-                    }
+}
 
 
 
 
 // Complete the main function
 int main(){
+    int counter = 0;
+    int elements = 0;
     char choice;
     char line[buffer_size];
     char filename[buffer_size];
-    FILE *input = NULL;
+    FITNESS_DATA fitness_data[900];
+    
     while (1)
     {   
        //FILE *input = fopen(filename, "r");
 
-        printf("A: file input name\n");                       
-        printf("B: view number of records\n");                    
-        printf("C: lowest steps\n");                     
-        printf("D: highest steps\n");                    
-        printf("E: mean \n");       
-        printf("F: longest period\n"); 
-        printf("Q: Exit the program\n");
+        printf("A: Specify the filename to be imported\n");                       
+        printf("B: Display the total number of records in the files\n");                    
+        printf("C: Find the date and time of the timeslot with the fewest steps\n");                     
+        printf("D: Find the date and time of the timeslot with the largest number of steps\n");                    
+        printf("E: Find the mean step count of all the records in the file \n");       
+        printf("F: Find the longest continuous period where the step count is above 500 steps\n"); 
+        printf("Q: Quit\n");
 
         // get the next character typed in and store in the 'choice'
         choice = getchar();
@@ -152,7 +155,7 @@ int main(){
             case 'a': 
                 
                 //get filename from the user
-                printf("Please enter the name of the data file: ");
+                printf("Input filename: ");
                 //these lines read in a line from the stdin (where the user types)
                 //and then takes the actual string out of it
                 //this removes any spaces or newlines.
@@ -160,30 +163,44 @@ int main(){
                 sscanf(line, " %s ", filename);
                 FILE *input = fopen(filename, "r"); 
                 
+
                 if (input == NULL)
-                    {
-                        printf("Error: File could not find or open the file\n");
-                        return 1;
-                    } 
-                    else {
-                        printf("File successfully loaded.\n");
-                    }
+                {
+                    printf("Error: Could not find or open the file.\n");
+                    continue;
+                } 
+                else {
+                    printf("File successfully loaded.\n");
+                }
+                while (fgets(line, buffer_size, input)!=NULL){
+                    tokeniseRecord(line, ",", fitness_data[counter].date, fitness_data[counter].time, fitness_data[counter].steps);
+                    counter++;
+                }
+                elements = counter;
                 break;
             case 'B':
             case 'b':
-                count_function(input);
+                printf("Total records: %d",elements);
+                
                 break;
             case 'C':
             case 'c':
-                lowest_steps(input);
+                lowest_steps(fitness_data, elements);
+                break;
+            case 'D':
+            case 'd':
+                highest_steps(fitness_data, elements);
                 break;
             case 'E':
             case 'e':
-                mean_count(input);
+                mean_count(fitness_data, elements);
                 break;
             case 'Q':
             case 'q':
                 exit(0);
+                break;
+            default:
+                printf("invalid choice.\n");
                 break;
         }
         
