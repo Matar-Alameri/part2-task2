@@ -8,7 +8,41 @@
 // Define any additional variables here
 // Global variables for filename and FITNESS_DATA array
 
+void longest_period(FITNESS_DATA *fitness_data, int elements){
+    int longeststart = 0, longestend = 0;
+    int currentstart = 0, currentend = 0;
+    int longestduration = 0, currentduration = 0;
 
+    for (int counter = 0; counter < elements; counter++){
+        int steps = atoi(fitness_data[counter].steps);
+
+        if(steps > 500){
+            if (currentduration == 0){
+                currentstart = counter;
+            }
+            currentduration++;
+            currentend = counter;
+        } else {
+            if (currentduration > longestduration){
+                longestduration = currentduration;
+                longeststart = currentstart;
+                longestend = currentend;
+
+            }
+            currentduration = 0;
+        }
+        
+    }
+
+    if (currentduration > longestduration){
+        longestduration = currentduration;
+        longeststart = currentstart;
+        longestend = currentend;
+    }
+
+    printf("Longest period start: %s %s\n", fitness_data[longeststart].date, fitness_data[longeststart].time);
+    printf("Longest period end: %s %s\n", fitness_data[longestend].date, fitness_data[longestend].time);
+}
 
      
 
@@ -87,7 +121,7 @@ void mean_count(FITNESS_DATA *fitness_data, int elements){
                 mean += steps;
             }
             mean /= counter;
-            printf("Your  %.0f\n", mean);            
+            printf("Mean step count: %.0f\n", mean);            
 }
 // This is your helper function. Do not change it in any way.
 // Inputs: character array representing a row; the delimiter character
@@ -180,7 +214,7 @@ int main(){
                 break;
             case 'B':
             case 'b':
-                printf("Total records: %d",elements);
+                printf("Total records: %d\n",elements);
                 
                 break;
             case 'C':
@@ -194,6 +228,10 @@ int main(){
             case 'E':
             case 'e':
                 mean_count(fitness_data, elements);
+                break;
+            case 'F':
+            case 'f':
+                longest_period(fitness_data, elements);
                 break;
             case 'Q':
             case 'q':
