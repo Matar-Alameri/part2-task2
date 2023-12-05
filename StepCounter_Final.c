@@ -166,15 +166,15 @@ int main(){
     while (1)
     {   
        //FILE *input = fopen(filename, "r");
-
+        printf("Menu Options:\n");
         printf("A: Specify the filename to be imported\n");                       
-        printf("B: Display the total number of records in the files\n");                    
+        printf("B: Display the total number of records in the file\n");                    
         printf("C: Find the date and time of the timeslot with the fewest steps\n");                     
         printf("D: Find the date and time of the timeslot with the largest number of steps\n");                    
         printf("E: Find the mean step count of all the records in the file \n");       
         printf("F: Find the longest continuous period where the step count is above 500 steps\n"); 
         printf("Q: Quit\n");
-
+        printf("Enter choice: ");
         // get the next character typed in and store in the 'choice'
         choice = getchar();
 
@@ -201,7 +201,7 @@ int main(){
                 if (input == NULL)
                 {
                     printf("Error: Could not find or open the file.\n");
-                    continue;
+                    return 1;
                 } 
                 else {
                     printf("File successfully loaded.\n");
@@ -238,7 +238,7 @@ int main(){
                 exit(0);
                 break;
             default:
-                printf("invalid choice.\n");
+                printf("Invalid choice. Try again.\n");
                 break;
         }
         
